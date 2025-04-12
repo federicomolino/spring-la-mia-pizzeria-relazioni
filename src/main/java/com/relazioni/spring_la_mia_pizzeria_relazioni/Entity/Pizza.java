@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 @Entity
 public class Pizza {
 
@@ -22,6 +24,17 @@ public class Pizza {
     @NotNull
     @Min(value = 1, message = "Prezzo inserito non valido")
     private double price;
+
+    @OneToMany(mappedBy = "pizza")
+    private List<OffertaSpecial> offerta;
+
+    public List<OffertaSpecial> getOfferta() {
+        return offerta;
+    }
+
+    public void setOfferta(List<OffertaSpecial> offerta) {
+        this.offerta = offerta;
+    }
 
     public Integer getId() {
         return id;

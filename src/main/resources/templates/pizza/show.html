@@ -14,7 +14,30 @@
     <div class="card-body">
       <h5 class="card-title" th:text="${pizza.name}"></h5>
       <p class="card-text" th:text="${pizza.description}"></p>
-      <h6 class="card-title" th:text="${pizza.price}">€</h6>
+      <div class="d-flex justify-content-between">
+        <h6 class="card-title" th:text="${pizza.price}"></h6>
+        <a th:href="@{/pizza/{id}/offer(id=${pizza.id})}" class="btn btn-outline-success btn-sm">Crea nuova Offerta</a>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${offertaSpeciali == null || offertaSpeciali.isEmpty()}" class="row">
+    <div class="container col-3 mt-3 text-center">
+      <h4>Nessuna Offerta presente</h4>
+    </div>
+  </div>
+
+  <div th:if="${offertaSpeciali != null and !offertaSpeciali.isEmpty()}" class="row">
+    <div class="container col-2 mt-3 text-center">
+      <h4>Offerte Speciali</h4>
+    </div>
+    <!--Visualizzo le offerte-->
+    <div class="row">
+      <div class="container col-3">
+        <ul th:each="offerta : ${offertaSpeciali}">
+          <li th:text="${offerta.titoloOfferta}"></li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>AddPizza</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+<!--importo navbar-->
+<div th:replace="~{StylePage/navbar :: navbar}"></div>
+<h1 class="text-center mb-3 mt-3">Offerta Pizza</h1>
+<div class="row justify-content-center">
+    <div class="container mt-3 col-6">
+        <form method="post" th:object="${formAdd}" th:action="@{/pizza/{id}/offer(id=${pizza.id})}">
+            <!--Data Inizio-->
+            <div>
+                <label class="form-label">Data Inizio Offerta</label>
+                <input type="date" name="dataInizio" th:field="*{inizioOfferta}" class="form-control" id="dataInizio" required>
+
+                <ul th:if="${#fields.hasErrors('inizioOfferta')}">
+                    <li th:each="err : ${#fields.errors('inizioOfferta')}" th:text="${err}" class="text-danger">Input is incorrect</li>
+                </ul>
+            </div>
+            <!--Data Fine-->
+            <div>
+                <label class="form-label">Data Fine Offerta</label>
+                <input type="date" name="dataFine" th:field="*{fineOfferta}" class="form-control" id="dataFine" required>
+
+                <ul th:if="${#fields.hasErrors('fineOfferta')}">
+                    <li th:each="err : ${#fields.errors('fineOfferta')}" th:text="${err}" class="text-danger">Input is incorrect</li>
+                </ul>
+            </div>
+            <!--Titolo offerta-->
+            <div>
+                <label class="form-label">Titolo Offerta</label>
+                <input type="text" name="title" th:field="*{titoloOfferta}" class="form-control" id="title" required>
+
+                <ul th:if="${#fields.hasErrors('titoloOfferta')}">
+                    <li th:each="err : ${#fields.errors('titoloOfferta')}" th:text="${err}" class="text-danger">Input is incorrect</li>
+                </ul>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+                <button type="submit" class="btn btn-outline-success">Conferma</button>
+                <a class="btn btn-outline-danger" th:href="@{/pizza}">Torna indietro</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

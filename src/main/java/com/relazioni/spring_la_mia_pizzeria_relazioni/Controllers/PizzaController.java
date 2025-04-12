@@ -1,8 +1,9 @@
 package com.relazioni.spring_la_mia_pizzeria_relazioni.Controllers;
 
+import com.relazioni.spring_la_mia_pizzeria_relazioni.Entity.OffertaSpecial;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Entity.Pizza;
+import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.OfferteSpecialiRepository;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.Pizze;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,22 +43,20 @@ public class PizzaController {
         return "pizza/index";
     }
 
+    @Autowired
+    private OfferteSpecialiRepository offerteSpecialiRepository;
+
     @GetMapping("/pizza/{id}")
     public String show(@PathVariable("id") Integer id, Model model){
         Optional<Pizza> pizza = pizzaRepository.findById(id);
+
+        List<OffertaSpecial> offerte = offerteSpecialiRepository.findAll();
+        model.addAttribute("offertaSpeciali", offerte);
         if (pizza.isPresent()){
             model.addAttribute("pizza",pizzaRepository.findById(id).get());
             return "pizza/show";
         }
         return "pizza/error";
-    }
-
-    //Logout
-    @GetMapping("/logout")
-    public String Lougout(HttpSession session){
-        //termino la sessione
-        session.invalidate();
-        return "redirect:/autenticazione";
     }
 
     //Aggiungere Pizza
