@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Navbar</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+<!-- Navbar -->
+<div th:fragment = "navbar">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/pizza">Lista Pizze</a>
+      <div class="ms-auto">
+        <form method="get" th:action="@{/logout}">
+          <div th:if="${showButton}">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+              <i class="bi bi-box-arrow-left"> logout</i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </nav>
+</div>
+</body>
+</html>
