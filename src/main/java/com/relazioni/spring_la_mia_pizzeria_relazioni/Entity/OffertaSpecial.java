@@ -22,7 +22,7 @@ public class OffertaSpecial {
     private String titoloOfferta;
 
     @ManyToOne
-    @JoinColumn(name = "pizza_id")
+    @JoinColumn(name = "pizza_id", nullable = false)
     private Pizza pizza;
 
     public Pizza getPizza() {
