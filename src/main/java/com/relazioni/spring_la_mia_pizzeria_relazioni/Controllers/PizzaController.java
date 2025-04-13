@@ -50,12 +50,17 @@ public class PizzaController {
     public String show(@PathVariable("id") Integer id, Model model){
         Optional<Pizza> pizza = pizzaRepository.findById(id);
 
-        List<OffertaSpecial> offerte = offerteSpecialiRepository.findAll();
-        model.addAttribute("offertaSpeciali", offerte);
         if (pizza.isPresent()){
+
+            //Mi prendo l'id della pizza che fa riferimento all'offerta e poi lo passo al front
+            Pizza pId = pizzaRepository.findById(id).get();
+            List<OffertaSpecial> offerte = offerteSpecialiRepository.findByPizza(pId);
+            model.addAttribute("offertaSpeciali", offerte);
+
             model.addAttribute("pizza",pizzaRepository.findById(id).get());
             return "pizza/show";
         }
+
         return "pizza/error";
     }
 

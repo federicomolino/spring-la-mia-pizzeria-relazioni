@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDate;
 
@@ -42,12 +45,14 @@ public class OffertaController {
                                 BindingResult bindingResult, Model model, @PathVariable Integer id){
 
         if (offertaSpecial.getInizioOfferta().isBefore(LocalDate.now())){
-            bindingResult.rejectValue("inizioOfferta","errorDate",
+            bindingResult.rejectValue("inizioOfferta","inizioOfferta",
                     "La data non può essere inferiore ad oggi");
+            model.addAttribute("formAdd", offertaSpecial);
             return "pizza/AddEditOfferta";
         } else if (offertaSpecial.getFineOfferta().isBefore(offertaSpecial.getInizioOfferta())) {
-            bindingResult.rejectValue("fineOfferta","errorDate",
+            bindingResult.rejectValue("fineOfferta","fineOfferta",
                     "La data non può inferiore alla data di inizio");
+            model.addAttribute("formAdd", offertaSpecial);
             return "pizza/AddEditOfferta";
         }
 
@@ -57,10 +62,20 @@ public class OffertaController {
         //Associo la pizza all'offerta
         Pizza pizza = pizzaRepository.findById(id).get();
         offertaSpecial.setPizza(pizza);
+        //forzo a creare nuova entità
+        offertaSpecial.setId(null);
         model.addAttribute("formAdd", offertaSpecial);
 
         //Salvo
         offerteSpecialiRepository.save(offertaSpecial);
         return "redirect:/pizza/" + offertaSpecial.getPizza().getId();
+    }
+
+    //Cancella offerta
+    @PostMapping("offerta/delete/{id}")
+    public String DeleteOfferta(@PathVariable("id") Long id){
+        //Cancello in base id
+        offerteSpecialiRepository.deleteById(id);
+        return "redirect:/pizza";
     }
 }

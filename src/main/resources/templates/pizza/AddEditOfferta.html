@@ -14,7 +14,7 @@
             <!--Data Inizio-->
             <div>
                 <label class="form-label">Data Inizio Offerta</label>
-                <input type="date" name="dataInizio" th:field="*{inizioOfferta}" class="form-control" id="dataInizio" required>
+                <input type="date" name="inizioOfferta" th:field="*{inizioOfferta}" class="form-control" id="inizioOfferta" required>
 
                 <ul th:if="${#fields.hasErrors('inizioOfferta')}">
                     <li th:each="err : ${#fields.errors('inizioOfferta')}" th:text="${err}" class="text-danger">Input is incorrect</li>
@@ -23,7 +23,7 @@
             <!--Data Fine-->
             <div>
                 <label class="form-label">Data Fine Offerta</label>
-                <input type="date" name="dataFine" th:field="*{fineOfferta}" class="form-control" id="dataFine" required>
+                <input type="date" name="fineOfferta" th:field="*{fineOfferta}" class="form-control" id="fineOfferta" required>
 
                 <ul th:if="${#fields.hasErrors('fineOfferta')}">
                     <li th:each="err : ${#fields.errors('fineOfferta')}" th:text="${err}" class="text-danger">Input is incorrect</li>
