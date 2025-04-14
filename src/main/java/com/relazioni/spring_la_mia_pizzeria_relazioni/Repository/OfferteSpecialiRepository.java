@@ -9,4 +9,5 @@ import java.util.List;
 public interface OfferteSpecialiRepository extends JpaRepository<OffertaSpecial,Long> {
 
     List<OffertaSpecial> findByPizza(Pizza pizza);
+
 }

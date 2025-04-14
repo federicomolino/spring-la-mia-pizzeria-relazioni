@@ -2,6 +2,7 @@ package com.relazioni.spring_la_mia_pizzeria_relazioni.Entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -13,9 +14,11 @@ public class OffertaSpecial {
     private Long id;
 
     @NotNull
+    @DateTimeFormat (pattern = "yyyy-MM-dd")
     private LocalDate inizioOfferta;
 
     @NotNull
+    @DateTimeFormat (pattern = "yyyy-MM-dd")
     private LocalDate fineOfferta;
 
     @NotNull

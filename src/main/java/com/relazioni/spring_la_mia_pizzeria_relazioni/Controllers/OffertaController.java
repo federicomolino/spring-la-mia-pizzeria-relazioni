@@ -56,9 +56,9 @@ public class OffertaController {
             return "pizza/AddEditOfferta";
         }
 
-        if (bindingResult.hasErrors()){
-            return "pizza/AddEditOfferta";
-        }
+//        if (bindingResult.hasErrors()){
+//            return "pizza/AddEditOfferta";
+//        }
         //Associo la pizza all'offerta
         Pizza pizza = pizzaRepository.findById(id).get();
         offertaSpecial.setPizza(pizza);
@@ -77,5 +77,36 @@ public class OffertaController {
         //Cancello in base id
         offerteSpecialiRepository.deleteById(id);
         return "redirect:/pizza";
+    }
+
+    //Modifica Offerta
+    @GetMapping("/offerta/{id}/offer/edit")
+    public String ShowpageEditOfferta(@PathVariable("id") Long idOfferta, Model model){
+
+        //Recupero l'offerta tramite id
+        OffertaSpecial offertaSpecial = offerteSpecialiRepository.findById(idOfferta).get();
+
+        model.addAttribute("formAdd", offertaSpecial);
+        return "pizza/AddEditOfferta";
+    }
+
+    @PostMapping("/offerta/{id}/offer/edit")
+    public String EditPizzaOfferta(@PathVariable("id") Long id,
+                                   @Valid @ModelAttribute("formAdd") OffertaSpecial offertaForm,
+                                    Model model, BindingResult bindingResult){
+
+        if (bindingResult.hasErrors()){
+            model.addAttribute("formAdd", offerteSpecialiRepository.findById(offertaForm.getId()));
+            return "pizza/show";
+        }
+        //Mi recupero l'offerta
+        OffertaSpecial offertaEsistente = offerteSpecialiRepository.findById(id).get();
+        //salviamo i nuovi dati
+        offertaEsistente.setInizioOfferta(offertaForm.getInizioOfferta());
+        offertaEsistente.setFineOfferta(offertaForm.getFineOfferta());
+        offertaEsistente.setTitoloOfferta(offertaForm.getTitoloOfferta());
+        offerteSpecialiRepository.save(offertaEsistente);
+
+        return "redirect:/pizza/";
     }
 }
