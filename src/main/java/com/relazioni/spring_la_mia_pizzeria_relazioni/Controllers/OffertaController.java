@@ -51,16 +51,16 @@ public class OffertaController {
         if (offertaSpecial.getInizioOfferta().isBefore(LocalDate.now())){
             bindingResult.rejectValue("inizioOfferta","inizioOfferta",
                     "La data non può essere inferiore ad oggi");
-            model.addAttribute("formAdd", offertaSpecial);
-            return "redirect:/pizza/" + p.getId() + "/offer";
         } else if (offertaSpecial.getFineOfferta().isBefore(offertaSpecial.getInizioOfferta())) {
             bindingResult.rejectValue("fineOfferta","fineOfferta",
                     "La data non può inferiore alla data di inizio");
-            model.addAttribute("formAdd", offertaSpecial);
-            return "redirect:/pizza/" + p.getId() + "/offer";
         }
 
         if (bindingResult.hasErrors()){
+            //evitiamo che pizzaid sia null
+            offertaSpecial.setPizza(p);
+            model.addAttribute("formAdd", offertaSpecial);
+            model.addAttribute("pizza", p);
             return "pizza/AddEditOfferta";
         }
         //Associo la pizza all'offerta
