@@ -11,15 +11,8 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="/pizza">Lista Pizze</a>
-      <div class="ms-auto">
-        <form method="get" th:action="@{/logout}">
-          <div th:if="${showButton}">
-            <button type="submit" class="btn btn-outline-danger btn-sm">
-              <i class="bi bi-box-arrow-left"> logout</i>
-            </button>
-          </div>
-        </form>
-      </div>
+      <a class="nav-link text-white" href="/ingredienti">Ingredienti</a>
+      <div class="ms-auto"></div>
     </div>
   </nav>
 </div>

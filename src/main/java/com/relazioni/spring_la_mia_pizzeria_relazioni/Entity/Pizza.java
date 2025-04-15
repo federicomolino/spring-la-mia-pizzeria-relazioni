@@ -28,6 +28,22 @@ public class Pizza {
     @OneToMany(mappedBy = "pizza")
     private List<OffertaSpecial> offerta;
 
+    @ManyToMany
+    @JoinTable(
+            name = "ingredienti_pizza",
+            joinColumns = @JoinColumn(name = "pizza_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingrediente_id")
+    )
+    private List<Ingrediente> ingredienti;
+
+    public List<Ingrediente> getIngredienti() {
+        return ingredienti;
+    }
+
+    public void setIngredienti(List<Ingrediente> ingredienti) {
+        this.ingredienti = ingredienti;
+    }
+
     public List<OffertaSpecial> getOfferta() {
         return offerta;
     }

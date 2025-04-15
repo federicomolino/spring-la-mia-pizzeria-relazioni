@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
@@ -44,8 +43,7 @@ public class OffertaController {
 
     @PostMapping("/pizza/{id}/offer")
     public String CreateOfferta(@Valid @ModelAttribute("formAdd") OffertaSpecial offertaSpecial,
-                                BindingResult bindingResult, Model model, @PathVariable Integer id,
-                                RedirectAttributes redirectAttributes){
+                                BindingResult bindingResult, Model model, @PathVariable Integer id){
         //recupero id pizza
         Pizza p = pizzaRepository.findById(id).get();
         if (offertaSpecial.getInizioOfferta().isBefore(LocalDate.now())){
@@ -64,8 +62,7 @@ public class OffertaController {
             return "pizza/AddEditOfferta";
         }
         //Associo la pizza all'offerta
-        Pizza pizza = pizzaRepository.findById(id).get();
-        offertaSpecial.setPizza(pizza);
+        offertaSpecial.setPizza(p);
         //forzo a creare nuova entità
         offertaSpecial.setId(null);
         model.addAttribute("formAdd", offertaSpecial);
