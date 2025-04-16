@@ -52,6 +52,10 @@
                            th:checked="${ingrendienteCheck.contains(ingrediente)}">
                     <label class="form-check-label" for="checkIngrediente" th:text="${ingrediente.ingrediente}"></label>
                 </div>
+                <!--Errore-->
+                <div th:if="${#fields.hasErrors('ingredienti')}" class="text-warning">
+                    <p th:errors="*{ingredienti}"></p>
+                </div>
             </div>
         </div>
     </form>

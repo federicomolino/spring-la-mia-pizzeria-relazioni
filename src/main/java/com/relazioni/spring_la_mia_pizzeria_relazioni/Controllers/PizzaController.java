@@ -6,6 +6,7 @@ import com.relazioni.spring_la_mia_pizzeria_relazioni.Entity.Pizza;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.IngredientiRepository;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.OfferteSpecialiRepository;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.Pizze;
+import com.relazioni.spring_la_mia_pizzeria_relazioni.Services.IngredientiService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -109,6 +110,9 @@ public class PizzaController {
         return"pizza/editPizza";
     }
 
+    @Autowired
+    private IngredientiService ingredientiService;
+
     @PostMapping("/pizza/editPizza/{id}")
     public String EditPizza(@Valid @ModelAttribute("formAdd") Pizza pizzaForm,
                             Model model, BindingResult bindingResult,
@@ -122,10 +126,17 @@ public class PizzaController {
 
         }
 
+        // Controllo se almeno un ingrediente è stato selezionato
+        if (IngredientiID == null || IngredientiID.isEmpty()) {
+            bindingResult.rejectValue("ingredienti", "errorIngredienti",
+                    "Almeno un ingrediente deve essere selezionato");
+        }
+
         if (bindingResult.hasErrors()){
             model.addAttribute("pizza", pizzaForm);
             return "pizza/editPizza";
         }
+
         //Recupero gli ingredienti e associo id all'ingrediente
         List<Ingrediente> ingredienti = ingredientiRepository.findAllById(IngredientiID);
         //collego gli ingredienti alla singola pizza
