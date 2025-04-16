@@ -1,7 +1,9 @@
 package com.relazioni.spring_la_mia_pizzeria_relazioni.Controllers;
 
+import com.relazioni.spring_la_mia_pizzeria_relazioni.Entity.Ingrediente;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Entity.OffertaSpecial;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Entity.Pizza;
+import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.IngredientiRepository;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.OfferteSpecialiRepository;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.Pizze;
 import jakarta.validation.Valid;
@@ -28,6 +30,9 @@ public class PizzaController {
     @Autowired
     private Pizze pizzaRepository; //pizzaRepository è l'oggetto
 
+    @Autowired
+    private IngredientiRepository ingredientiRepository;
+
     @GetMapping("/pizza")
     public String index(@RequestParam(name = "name" , required = false) String name, Model model){
         List<Pizza> pizze;
@@ -49,15 +54,13 @@ public class PizzaController {
     @GetMapping("/pizza/{id}")
     public String show(@PathVariable("id") Integer id, Model model){
         Optional<Pizza> pizza = pizzaRepository.findById(id);
-
         if (pizza.isPresent()){
-
             //Mi prendo l'id della pizza che fa riferimento all'offerta e poi lo passo al front
-            Pizza pId = pizzaRepository.findById(id).get();
-            List<OffertaSpecial> offerte = offerteSpecialiRepository.findByPizza(pId);
-            model.addAttribute("offertaSpeciali", offerte);
+            Pizza pizza1 = pizza.get();
 
-            model.addAttribute("pizza",pizzaRepository.findById(id).get());
+            List<OffertaSpecial> offerte = offerteSpecialiRepository.findByPizza(pizza1);
+            model.addAttribute("offertaSpeciali", offerte);
+            model.addAttribute("pizza",pizza1);
             return "pizza/show";
         }
 
@@ -67,13 +70,16 @@ public class PizzaController {
     //Aggiungere Pizza
     @GetMapping("/addPizza")
     public String ShowPageRegistrer(Model model){
+        //passimo la lista di tutti gli ingredienti
+        model.addAttribute("list", ingredientiRepository.findAll());
         model.addAttribute("formAdd", new Pizza());
         return "pizza/addPizza";
     }
 
     @PostMapping("/addPizza")
     public String addPizza(@Valid @ModelAttribute("formAdd") Pizza pizzaForm, BindingResult bindingResult,
-                           RedirectAttributes redirectAttributes){
+                           RedirectAttributes redirectAttributes, @RequestParam(value = "ingrediente", required = false)
+                           List<Integer> IngredientiID){
         if (bindingResult.hasErrors()){
             return "pizza/addPizza";
         } else if (pizzaRepository.existsByName(pizzaForm.getName())) {
@@ -81,7 +87,12 @@ public class PizzaController {
                     "Nome pizza già presente nel sistema");
             return "pizza/addPizza";
         }
-        //Salvo a db e torno sull'index
+        //Recupero gli ingredienti e associo id all'ingrediente
+        List<Ingrediente> ingredienti = ingredientiRepository.findAllById(IngredientiID);
+        //collego gli ingredienti alla singola pizza
+        pizzaForm.setIngredienti(ingredienti);
+
+        //Salvo la pizza a db e torno sull'index
         pizzaRepository.save(pizzaForm);
         redirectAttributes.addFlashAttribute("success", "La pizza è stata aggiunta");
         return "redirect:/pizza";
@@ -90,13 +101,18 @@ public class PizzaController {
     //Modifica pizza
     @GetMapping("/pizza/editPizza/{id}")
     public String ShowEditPizza(@PathVariable("id") Integer id, Model model){
+        Pizza pizza = pizzaRepository.findById(id).get();
         model.addAttribute("formAdd", pizzaRepository.findById(id).get());
+        model.addAttribute("list", ingredientiRepository.findAll());
+        //Per vedere quelli che hanno già il check
+        model.addAttribute("ingrendienteCheck", pizza.getIngredienti());
         return"pizza/editPizza";
     }
 
     @PostMapping("/pizza/editPizza/{id}")
     public String EditPizza(@Valid @ModelAttribute("formAdd") Pizza pizzaForm,
-                            Model model, BindingResult bindingResult){
+                            Model model, BindingResult bindingResult,
+                            @RequestParam(value = "ingrediente", required = false) List<Integer> IngredientiID){
 
         //Mi salvo l'oggetto e verifico se viene cambiato il nome
         Pizza p = pizzaRepository.findById(pizzaForm.getId()).get();
@@ -110,6 +126,11 @@ public class PizzaController {
             model.addAttribute("pizza", pizzaForm);
             return "pizza/editPizza";
         }
+        //Recupero gli ingredienti e associo id all'ingrediente
+        List<Ingrediente> ingredienti = ingredientiRepository.findAllById(IngredientiID);
+        //collego gli ingredienti alla singola pizza
+        pizzaForm.setIngredienti(ingredienti);
+
         //salviamo i nuovi dati
         pizzaForm.setDescription(pizzaForm.getDescription());
         pizzaForm.setPrice(pizzaForm.getPrice());

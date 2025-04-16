@@ -9,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/")
 public class IngredientiController {
@@ -32,17 +30,14 @@ public class IngredientiController {
     public String AddIngredienti(@ModelAttribute("formAdd") Ingrediente ingredienteInput,
                                  BindingResult bindingResult,
                                  Model model){
-        List<Ingrediente> ingrediente = ingredientiRepository.findByIngrediente(ingredienteInput.getIngrediente());
-        if (!ingrediente.isEmpty()){
-            bindingResult.rejectValue("ingrediente","errorIngrediente",
-                    "Il nome dell'ingrediente esiste già");
-        }else if (ingredienteInput.getIngrediente().trim().equals("")){
-            return "ingredienti/index";
-        }
+        //passiamo al service per opportune verifiche
+        serviceIngredienti.AddIngredienti(ingredienteInput, bindingResult, model);
+
         if (bindingResult.hasErrors()){
             model.addAttribute("list", ingredientiRepository.findAll());
             return "ingredienti/index";
         }
+
         ingredientiRepository.save(ingredienteInput);
         model.addAttribute("formAdd",new Ingrediente());
         model.addAttribute("list", ingredientiRepository.findAll());
