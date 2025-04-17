@@ -15,7 +15,6 @@ public class Pizza {
     private Integer id;
 
     @Column(unique = true)
-    @NotBlank(message = "Nome non valido")
     private String name;
 
     @NotBlank(message = "Descrizione non valida")

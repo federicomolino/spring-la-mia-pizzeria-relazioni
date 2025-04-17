@@ -4,7 +4,6 @@ import com.relazioni.spring_la_mia_pizzeria_relazioni.Entity.Ingrediente;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.IngredientiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -17,7 +16,7 @@ public class IngredientiService {
     private IngredientiRepository ingredientiRepository;
     //Aggiunta Ingredienti
     public String AddIngredienti (Ingrediente ingredienteInput,
-                                  BindingResult bindingResult, Model model){
+                                  BindingResult bindingResult){
         List<Ingrediente> ingrediente = ingredientiRepository.findByIngrediente(ingredienteInput.getIngrediente());
 
         if (!ingrediente.isEmpty()){

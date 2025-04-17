@@ -6,7 +6,6 @@ import com.relazioni.spring_la_mia_pizzeria_relazioni.Entity.Pizza;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.IngredientiRepository;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.OfferteSpecialiRepository;
 import com.relazioni.spring_la_mia_pizzeria_relazioni.Repository.Pizze;
-import com.relazioni.spring_la_mia_pizzeria_relazioni.Services.IngredientiService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -80,22 +79,35 @@ public class PizzaController {
     @PostMapping("/addPizza")
     public String addPizza(@Valid @ModelAttribute("formAdd") Pizza pizzaForm, BindingResult bindingResult,
                            RedirectAttributes redirectAttributes, @RequestParam(value = "ingrediente", required = false)
-                           List<Integer> IngredientiID){
+                           List<Integer> IngredientiID, Model model){
+
         if (bindingResult.hasErrors()){
             return "pizza/addPizza";
-        } else if (pizzaRepository.existsByName(pizzaForm.getName())) {
+        }else if (pizzaRepository.existsByName(pizzaForm.getName())) {
             bindingResult.rejectValue("name", "messageError",
                     "Nome pizza già presente nel sistema");
+            model.addAttribute("list", ingredientiRepository.findAll());
             return "pizza/addPizza";
         }
-        //Recupero gli ingredienti e associo id all'ingrediente
-        List<Ingrediente> ingredienti = ingredientiRepository.findAllById(IngredientiID);
-        //collego gli ingredienti alla singola pizza
-        pizzaForm.setIngredienti(ingredienti);
+        try {
+            //Verifico se viene passato un numero
+            Double.parseDouble(pizzaForm.getName());
+            bindingResult.rejectValue("name", "messageError",
+                    "Non può essere passato un numero");
+            model.addAttribute("list",ingredientiRepository.findAll());
+            return "pizza/addPizza";
+        }catch (Exception numberStr){
+            if (IngredientiID != null){
+                //Recupero gli ingredienti e associo id all'ingrediente
+                List<Ingrediente> ingredienti = ingredientiRepository.findAllById(IngredientiID);
+                //collego gli ingredienti alla singola pizza
+                pizzaForm.setIngredienti(ingredienti);
+            }
 
-        //Salvo la pizza a db e torno sull'index
-        pizzaRepository.save(pizzaForm);
-        redirectAttributes.addFlashAttribute("success", "La pizza è stata aggiunta");
+            //Salvo la pizza a db e torno sull'index
+            pizzaRepository.save(pizzaForm);
+            redirectAttributes.addFlashAttribute("success", "La pizza è stata aggiunta");
+        }
         return "redirect:/pizza";
     }
 
@@ -110,9 +122,6 @@ public class PizzaController {
         return"pizza/editPizza";
     }
 
-    @Autowired
-    private IngredientiService ingredientiService;
-
     @PostMapping("/pizza/editPizza/{id}")
     public String EditPizza(@Valid @ModelAttribute("formAdd") Pizza pizzaForm,
                             Model model, BindingResult bindingResult,
@@ -120,7 +129,7 @@ public class PizzaController {
 
         //Mi salvo l'oggetto e verifico se viene cambiato il nome
         Pizza p = pizzaRepository.findById(pizzaForm.getId()).get();
-        if (!pizzaForm.getName().equals(p.getName())){
+        if (!pizzaForm.getName().equals(p.getName()) || (pizzaForm.getName().trim().equals(""))){
             bindingResult.rejectValue("name","errorName",
                     "Il nome non può essere modificato");
 
@@ -153,6 +162,18 @@ public class PizzaController {
     //Cancella pizza
     @PostMapping("pizza/delete/{id}")
     public String DeletePizza(@PathVariable("id") Integer id){
+        //Converto id in long
+        Long pizzaId = id.longValue();
+        List<OffertaSpecial> offerte = offerteSpecialiRepository.findByIdPizza(pizzaId);
+        if (!offerte.isEmpty()){
+            //Mi guardo le offerte
+            for (OffertaSpecial offerta : offerte){
+                //Dissocio le offerte dalla pizza
+                offerta.setPizza(null);
+            }
+            offerteSpecialiRepository.saveAll(offerte);
+            offerteSpecialiRepository.deleteAll(offerte);
+        }
         //Cancello in base id
         pizzaRepository.deleteById(id);
         return "redirect:/pizza";

@@ -31,7 +31,7 @@ public class IngredientiController {
                                  BindingResult bindingResult,
                                  Model model){
         //passiamo al service per opportune verifiche
-        serviceIngredienti.AddIngredienti(ingredienteInput, bindingResult, model);
+        serviceIngredienti.AddIngredienti(ingredienteInput, bindingResult);
 
         if (bindingResult.hasErrors()){
             model.addAttribute("list", ingredientiRepository.findAll());
