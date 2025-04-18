@@ -10,7 +10,7 @@
 
 <div class="container">
     <h2 class="mb-3 mt-3">Aggiungi Pizza</h2>
-    <form method="post" th:object="${formAdd}" th:action="@{/addPizza}">
+    <form method="post" th:object="${formAdd}" th:action="@{/addPizza}" enctype="multipart/form-data">
         <div class="row">
             <div class="col-6">
                 <div>
@@ -40,7 +40,13 @@
                             class="text-danger">Input is incorrect</li>
                     </ul>
                 </div>
-                <div class="d-flex justify-content-between">
+                <!--Permetto l'inserimento di un file per immagine pizza-->
+                <div class="col-4 mt-2">
+                    <p>Carica Immagine Pizza</p>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
                     <button type="submit" class="btn btn-primary">Aggiungi Pizza</button>
                     <a th:href="@{/pizza}" class="btn btn-danger">Cancella</a>
                 </div>

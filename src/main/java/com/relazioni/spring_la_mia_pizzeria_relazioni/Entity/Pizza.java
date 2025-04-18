@@ -24,6 +24,16 @@ public class Pizza {
     @Min(value = 1, message = "Prezzo inserito non valido")
     private double price;
 
+    private String imgPath;
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+    }
+
     @OneToMany(mappedBy = "pizza")
     private List<OffertaSpecial> offerta;
 

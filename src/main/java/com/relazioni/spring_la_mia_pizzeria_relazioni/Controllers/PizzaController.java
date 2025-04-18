@@ -12,8 +12,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,7 +85,8 @@ public class PizzaController {
     @PostMapping("/addPizza")
     public String addPizza(@Valid @ModelAttribute("formAdd") Pizza pizzaForm, BindingResult bindingResult,
                            RedirectAttributes redirectAttributes, @RequestParam(value = "ingrediente", required = false)
-                           List<Integer> IngredientiID, Model model){
+                           List<Integer> IngredientiID, @RequestParam(value = "image", required = false) MultipartFile Image,
+                           Model model) throws IOException {
 
         if (bindingResult.hasErrors()){
             return "pizza/addPizza";
@@ -103,7 +110,17 @@ public class PizzaController {
                 //collego gli ingredienti alla singola pizza
                 pizzaForm.setIngredienti(ingredienti);
             }
+            //Gestione dell'immagine
+            if (!Image.isEmpty()){
+                String uploadImg = "src/main/resources/static/";
+                String fileName = Image.getOriginalFilename();
+                Path path = Paths.get(uploadImg + fileName); //diamo il nome dell'immagine caricata al path
+                Files.createDirectories(path.getParent()); // crea la cartella se non esiste
+                //Prende il contenuto del file caricato, lo cìopia nel path, se già presente lo sovrascrive
+                Files.copy(Image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
+                pizzaForm.setImgPath("/" + fileName);
+            }
             //Salvo la pizza a db e torno sull'index
             pizzaRepository.save(pizzaForm);
             redirectAttributes.addFlashAttribute("success", "La pizza è stata aggiunta");
@@ -115,6 +132,7 @@ public class PizzaController {
     @GetMapping("/pizza/editPizza/{id}")
     public String ShowEditPizza(@PathVariable("id") Integer id, Model model){
         Pizza pizza = pizzaRepository.findById(id).get();
+        model.addAttribute("pizza", pizza);
         model.addAttribute("formAdd", pizzaRepository.findById(id).get());
         model.addAttribute("list", ingredientiRepository.findAll());
         //Per vedere quelli che hanno già il check
@@ -125,7 +143,8 @@ public class PizzaController {
     @PostMapping("/pizza/editPizza/{id}")
     public String EditPizza(@Valid @ModelAttribute("formAdd") Pizza pizzaForm,
                             Model model, BindingResult bindingResult,
-                            @RequestParam(value = "ingrediente", required = false) List<Integer> IngredientiID){
+                            @RequestParam(value = "ingrediente", required = false) List<Integer> IngredientiID,
+                            @RequestParam(value = "image", required = false) MultipartFile Image) throws IOException {
 
         //Mi salvo l'oggetto e verifico se viene cambiato il nome
         Pizza p = pizzaRepository.findById(pizzaForm.getId()).get();
@@ -144,6 +163,17 @@ public class PizzaController {
         if (bindingResult.hasErrors()){
             model.addAttribute("pizza", pizzaForm);
             return "pizza/editPizza";
+        }
+        //Gestione dell'immagine
+        if (!Image.isEmpty()){
+            String uploadImg = "src/main/resources/static/";
+            String fileName = Image.getOriginalFilename();
+            Path path = Paths.get(uploadImg + fileName); //diamo il nome dell'immagine caricata al path
+            Files.createDirectories(path.getParent()); // crea la cartella se non esiste
+            //Prende il contenuto del file caricato, lo cìopia nel path, se già presente lo sovrascrive
+            Files.copy(Image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+            pizzaForm.setImgPath("/" + fileName);
         }
 
         //Recupero gli ingredienti e associo id all'ingrediente
