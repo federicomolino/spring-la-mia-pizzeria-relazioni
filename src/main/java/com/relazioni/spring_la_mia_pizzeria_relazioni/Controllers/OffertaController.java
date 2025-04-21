@@ -74,10 +74,10 @@ public class OffertaController {
 
     //Cancella offerta
     @PostMapping("offerta/delete/{id}")
-    public String DeleteOfferta(@PathVariable("id") Long id, Integer idPizza){
+    public String DeleteOfferta(@PathVariable("id") Long id){
         //Cancello in base id
         offerteSpecialiRepository.deleteById(id);
-        return "redirect:/pizza";
+        return "redirect:/pizza/";
     }
 
     //Modifica Offerta

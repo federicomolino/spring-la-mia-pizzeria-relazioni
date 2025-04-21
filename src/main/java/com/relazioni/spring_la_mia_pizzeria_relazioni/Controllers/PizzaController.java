@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,9 @@ public class PizzaController {
     @Autowired
     private IngredientiRepository ingredientiRepository;
 
+    @Autowired
+    private OfferteSpecialiRepository offerteSpecialiRepository;
+
     @GetMapping("/pizza")
     public String index(@RequestParam(name = "name" , required = false) String name, Model model){
         List<Pizza> pizze;
@@ -53,9 +57,6 @@ public class PizzaController {
         model.addAttribute("list", pizze);
         return "pizza/index";
     }
-
-    @Autowired
-    private OfferteSpecialiRepository offerteSpecialiRepository;
 
     @GetMapping("/pizza/{id}")
     public String show(@PathVariable("id") Integer id, Model model){
@@ -154,10 +155,9 @@ public class PizzaController {
 
         }
 
-        // Controllo se almeno un ingrediente è stato selezionato
-        if (IngredientiID == null || IngredientiID.isEmpty()) {
-            bindingResult.rejectValue("ingredienti", "errorIngredienti",
-                    "Almeno un ingrediente deve essere selezionato");
+//      Se non viene selezioneto nessun ingrendiente creo lista vuota
+        if (IngredientiID == null) {
+            IngredientiID = new ArrayList<>();
         }
 
         if (bindingResult.hasErrors()){
@@ -174,6 +174,8 @@ public class PizzaController {
             Files.copy(Image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
             pizzaForm.setImgPath("/" + fileName);
+        }else {
+            pizzaForm.setImgPath(p.getImgPath());
         }
 
         //Recupero gli ingredienti e associo id all'ingrediente
